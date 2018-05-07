@@ -1,0 +1,54 @@
+clear all
+clc
+%------ Interpolating Data ---------
+n=input('Enter the number of interpolating nodes : ');
+%n=20; %input('Enter the number of nodes ');
+x=linspace(0,4*pi,n);% X-coordinates at which the function values are known
+yknown=cos(x); %
+%------ Interpolation By Linear PW ---------
+n1=input('Enter the number of interpolated nodes : ');
+%n1=40;
+x1=linspace(0,4*pi,n1);
+y_new=interp1(x,yknown,x1,'linear');
+%------ Exact ---------------------
+x2=linspace(0,4*pi,100);
+y_ext=cos(x2);
+%------ Interpolation By Matric Norm ---------
+for i=1:n
+    for j=1:n
+        r(i,j)=abs(x(1,i)-x(1,j));
+    end
+end
+alpha=r\(yknown)'; 
+for i=1:n1
+    for j=1:n
+        r1(i,j)=abs(x1(1,i)-x(1,j));
+    end
+end
+yinter=(r1*alpha); % The solutions
+%------- Plotting Results -----------
+plot(x,yknown,'k*','linewidth',4);
+hold on
+plot(x,yknown,'r','linewidth',2);
+hold on
+plot(x1,yinter,'bo','linewidth',2);
+hold on
+plot(x2,y_ext,'k','linewidth',2);
+grid on
+legend('Known Nodes','By PW-Linear','By Matrix Norm','Exact Value');
+title('Interpolation Comparison');
+xlabel('x','FontSize',14);
+ylabel('cos(x)','FontSize',14);
+%----------- Displaying Results -------------
+Yext=cos(x1);
+disp('************* BELOW ARE THE SOLUTIONS YOU EXPECTED ***********')
+nod=1:1:n1; node=(nod');
+Solu=zeros(n1,4);
+for i=1:n1
+Solu(i,1)=node(i,1);
+Solu(i,2)=y_new(1,i);
+Solu(i,3)=yinter(i,1);
+Solu(i,4)=Yext(1,i);  
+end
+disp('    node     in-inter    Mtx-inter    Ext')
+Solu
